@@ -1,4 +1,5 @@
 from tkinter import *
+import tkinter as tk
 from tkinter import messagebox, ttk
 from PIL import Image, ImageTk
 from tkinter import Toplevel
@@ -128,7 +129,6 @@ def abrir_ventana_academico():
     btn_borrar_academico.place(x=170, y=230)
     
 def calcular_promedio_academico(*args):
-    global promedio
     notas = []
     for arg in args:
         nota = arg.get()
@@ -142,8 +142,11 @@ def calcular_promedio_academico(*args):
             messagebox.showerror("Error", "No se ha ingresado un valor para una nota.")
             return
     if notas:
+        global promedio
         promedio = sum(notas) / len(notas)
         messagebox.showinfo("Promedio", "Se ha calculado el promedio.")
+        promediofin = round(promedio, 2) 
+        promedio = tk.DoubleVar(value=promediofin)
         ventana_academico.destroy()
     else:
         promedio = None
@@ -154,6 +157,7 @@ def borrar_datos_academico(*args):
         arg.delete(0, END)
 
 def abrir_ventana_medico():
+    global ventana_medico
     ventana_medico = Toplevel(ventana_principal)
     ventana_medico.title("Ventana Medico")
     ventana_medico.geometry("500x460")
@@ -164,8 +168,12 @@ def abrir_ventana_medico():
     label_fondo3.place(x=0, y=0, relwidth=1, relheight=1)
 
     #variables 
+    global peso
     peso = StringVar()
+    global estatura
     estatura = StringVar()
+    global sangre_elegido
+    sangre_elegido = StringVar() 
     sangre = ["O+", "O-", "AB+", "AB-", "A+", "A-", "B+", "B-"]
 
     ##Frame 1
@@ -223,27 +231,113 @@ def abrir_ventana_medico():
     lb_sangre.config(bg="aquamarine2", fg="black", font=("System", 16))
     lb_sangre.place(x=10, y=110)
 
-    cmb_sangre = ttk.Combobox(frame_datos2, textvariable=sangre, values=sangre, font=("Helvetica", 12), width=4)
+    cmb_sangre = ttk.Combobox(frame_datos2, textvariable=sangre_elegido, values=sangre, font=("Helvetica", 12), width=4)
     cmb_sangre.place(x=230, y=110)
 
     #botones
-    btn_guardar_academico = Button(frame_datos2, text="Guardar", command=lambda: calcular_promedio_academico(calculo, algebra, quimica, programacion, lenguaje, fisica, catedra))
-    btn_guardar_academico.config(bg="white", fg="black", font=("System", 12), width=12)
-    btn_guardar_academico.place(x=10, y=200)
+    btn_guardar_medico = Button(frame_datos2, text="Guardar", command=guardar_datos_medico)
+    btn_guardar_medico.config(bg="white", fg="black", font=("System", 12), width=12)
+    btn_guardar_medico.place(x=10, y=200)
 
-    btn_borrar_academico = Button(frame_datos2, text="Borrar datos", command=lambda: borrar_datos_academico(entry_algebra, entry_quimica, entry_programacion, entry_lenguaje, entry_fisica, entry_catedra))
-    btn_borrar_academico.config(bg="white", fg="black", font=("System", 12), width=12)
-    btn_borrar_academico.place(x=170, y=200)
+    btn_borrar_medico = Button(frame_datos2, text="Borrar datos", command=borrar_datos_medico)
+    btn_borrar_medico.config(bg="white", fg="black", font=("System", 12), width=12)
+    btn_borrar_medico.place(x=170, y=200)
+
+def guardar_datos_medico():
+    global peso
+    global estatura
+    global sangre_elegido
+
+    # Validar que todas las variables tengan datos
+    if not peso.get() or not estatura.get() or not sangre_elegido.get():
+        messagebox.showerror("Error", "Debe llenar todas las casillas.")
+    else:
+        messagebox.showinfo("Promedio", "Se han guardado los datos.")
+        ventana_medico.destroy()
+        return
+
+def borrar_datos_medico():
+    # Borrar los datos ingresados en las variables
+    peso.set('')
+    estatura.set('')
+    sangre_elegido.set('')
 
 def abrir_ventana_informe():
+    if not nombre.get() or not promedio.get() or not codigo.get() or not edad.get() or not sexo_elegido.get() or not programa_elegido.get() or not peso.get() or not estatura.get() or not sangre_elegido.get():
+        messagebox.showerror("Error", "Por favor, rellena todos los campos.")
+        return
+    nombre1 = nombre.get()
+    promedio1 = promedio.get()
+    codigo1 = codigo.get()
+    edad1 = edad.get()
+    sexo1 = sexo_elegido.get()
+    programa1 = programa_elegido.get()
+    peso1 = peso.get()
+    estatura1 = estatura.get()
+    sangre1 = sangre_elegido.get()
+
     ventana_informe = Toplevel(ventana_principal)
-    ventana_informe.title("Ventana Medico")
-    ventana_informe.geometry("500x460")
+    ventana_informe.title("Ventana Informe")
+    ventana_informe.geometry("500x400")
     ventana_informe.resizable(0,0)
 
     #imagen de fondo
-    label_fondo3 = Label(ventana_medico, image=imagen_tk)
-    label_fondo3.place(x=0, y=0, relwidth=1, relheight=1)
+    label_fondo4 = Label(ventana_informe, image=imagen_tk)
+    label_fondo4.place(x=0, y=0, relwidth=1, relheight=1)
+
+    #frame titulo informe
+    frame_titulo_informe = Frame(ventana_informe)
+    frame_titulo_informe.config(bg="aquamarine2", width=480, height=50)
+    frame_titulo_informe.place(x=10, y=10)
+
+    lb_titulo_informe = Label(frame_titulo_informe, text ="Informe del Estudiante")
+    lb_titulo_informe.config(font=("System", 18), bg="aquamarine2", fg="black")
+    lb_titulo_informe.place(relx=0.5, rely=0.5, anchor=CENTER)
+
+    #frame informe
+    frame_informe = Frame(ventana_informe)
+    frame_informe.config(bg="aquamarine2", width=480, height=320)
+    frame_informe.place(x=10, y=70)
+
+    lb_nombre = Label(frame_informe, text=f"Nombre: {nombre1}")
+    lb_nombre.config(font=("System", 14), bg="aquamarine2", fg="black")
+    lb_nombre.place(x=20, y=20)
+
+    lb_promedio = Label(frame_informe, text=f"Promedio: {promedio1}")
+    lb_promedio.config(font=("System", 14), bg="aquamarine2", fg="black")
+    lb_promedio.place(x=20, y=50)
+
+    lb_codigo = Label(frame_informe, text=f"Código: {codigo1}")
+    lb_codigo.config(font=("System", 14), bg="aquamarine2", fg="black")
+    lb_codigo.place(x=20, y=80)
+
+    lb_edad = Label(frame_informe, text=f"Edad: {edad1}")
+    lb_edad.config(font=("System", 14), bg="aquamarine2", fg="black")
+    lb_edad.place(x=20, y=110)
+
+    lb_sexo = Label(frame_informe, text=f"Sexo: {sexo1}")
+    lb_sexo.config(font=("System", 14), bg="aquamarine2", fg="black")
+    lb_sexo.place(x=20, y=140)
+
+    lb_programa = Label(frame_informe, text=f"Programa: {programa1}")
+    lb_programa.config(font=("System", 14), bg="aquamarine2", fg="black")
+    lb_programa.place(x=20, y=170)
+
+    lb_peso = Label(frame_informe, text=f"Peso: {peso1}")
+    lb_peso.config(font=("System", 14), bg="aquamarine2", fg="black")
+    lb_peso.place(x=20, y=200)
+
+    lb_estatura = Label(frame_informe, text=f"Estatura: {estatura1}")
+    lb_estatura.config(font=("System", 14), bg="aquamarine2", fg="black")
+    lb_estatura.place(x=20, y=230)
+
+    lb_sangre = Label(frame_informe, text=f"Tipo de Sangre: {sangre1}")
+    lb_sangre.config(font=("System", 14), bg="aquamarine2", fg="black")
+    lb_sangre.place(x=20, y=260)
+
+
+
+
 
 ##ventana principal
 ventana_principal = Tk()
@@ -297,9 +391,10 @@ frame_datos_basicos.place(x=10, y=120)
 
 #variables
 vcmd = (ventana_principal.register(validar_numero_input), '%P')
+global nombre
 nombre = StringVar()
-codigo = str(StringVar())
-edad = str(StringVar())
+codigo = StringVar()
+edad = StringVar()
 programa = ["ING Sitemas", "ING Civil", "ING Electrica", "ING Electronica", "ING Quimica", "ING Industrial", "ING Mecanica", "Turismo"]
 programa_elegido = StringVar()
 sexo = ["Masculino", "Femenino", "Helicoptero Apache"]
@@ -398,7 +493,7 @@ lb_informe = Label(frame_informe, text ="Generar informe:")
 lb_informe.config(bg="aquamarine2", fg="black", font=("System", 16))
 lb_informe.place(x=10, y=10)
 
-btn_academico = Button(frame_informe, text="Informe", command=abrir_ventana_academico)
+btn_academico = Button(frame_informe, text="Informe", command=abrir_ventana_informe)
 btn_academico.config(bg="white", fg="black", font=("System", 12), width=12)
 btn_academico.place(x=300, y=10)
 
